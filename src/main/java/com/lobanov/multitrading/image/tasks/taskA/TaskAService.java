@@ -1,4 +1,4 @@
-package com.lobanov.multitrading.image.tasks;
+package com.lobanov.multitrading.image.tasks.taskA;
 
 import com.lobanov.multitrading.image.proccessor.ImageProcessor;
 import com.lobanov.multitrading.image.reader.ImageIOHelper;
@@ -19,13 +19,13 @@ public class TaskAService {
     }
 
     public void doATask() {
-        var file = new File("C:\\Users\\guard\\OneDrive\\Рабочий стол\\МНОГОПОТОЧКА\\multitrading\\src\\main\\resources\\images\\cat.jpg");
+        var file = new File("C:\\Users\\guard\\OneDrive\\Рабочий стол\\МНОГОПОТОЧКА\\multitrading\\src\\main\\resources\\images\\1.png");
         BufferedImage bufferedImage = imageIOHelper.readImage(file);
 
         var imageIntensity = imageProcessor.getImageIntensityParallel(bufferedImage);
-        var erodedImage = imageProcessor.performErosion(imageIntensity);
+        var erodedImage = imageProcessor.performErosionParallel(imageIntensity);
         var restoreErodedImage = imageProcessor.restoreErodedImageParallel(erodedImage);
 
-        imageIOHelper.saveImage(restoreErodedImage, "cat_erroded.jpg");
+        imageIOHelper.saveImage(restoreErodedImage, "output");
     }
 }
