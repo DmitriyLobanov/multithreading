@@ -17,6 +17,10 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    implementation group: 'com.opencsv', name: 'opencsv', version: '5.9'
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
+
 
     testCompileOnly 'org.projectlombok:lombok:1.18.30'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'

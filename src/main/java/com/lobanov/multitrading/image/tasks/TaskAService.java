@@ -1,4 +1,4 @@
-package com.lobanov.multitrading.image.tasks.taskA;
+package com.lobanov.multitrading.image.tasks;
 
 import com.lobanov.multitrading.image.proccessor.ImageProcessor;
 import com.lobanov.multitrading.image.reader.ImageIOHelper;
@@ -18,7 +18,7 @@ public class TaskAService {
         this.imageProcessor = imageProcessor;
     }
 
-    public void doATask() {
+    public void doTask() {
         var file = new File("C:\\Users\\guard\\OneDrive\\Рабочий стол\\МНОГОПОТОЧКА\\multitrading\\src\\main\\resources\\images\\1.png");
         BufferedImage bufferedImage = imageIOHelper.readImage(file);
 

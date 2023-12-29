@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.awt.image.BufferedImage;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Slf4j
@@ -26,15 +27,17 @@ public class ImageProcessorImpl implements ImageProcessor {
         var numThreads = applicationProperties.getThreadsNumber();
         var chunkSize = imageWidth / numThreads;
 
-        try (var executor = Executors.newFixedThreadPool(numThreads)) {
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
 
-            var countDownLatch = new CountDownLatch(numThreads);
+        var countDownLatch = new CountDownLatch(numThreads);
+
+        try {
 
             for (int t = 0; t < numThreads; t++) {
                 final var startColumn = t * chunkSize;
                 final var endColumn = (t == numThreads - 1) ? imageWidth : (t + 1) * chunkSize;
 
-                executor.execute(() -> {
+                executorService.execute(() -> {
                     for (int i = startColumn; i < endColumn; i++) {
                         for (int j = 0; j < imageHeight; j++) {
 
@@ -58,6 +61,7 @@ public class ImageProcessorImpl implements ImageProcessor {
             e.printStackTrace();
         }
 
+
         return intensityMatrix;
     }
 
@@ -70,41 +74,40 @@ public class ImageProcessorImpl implements ImageProcessor {
 
         var numThreads = applicationProperties.getThreadsNumber();
 
-        try (var executorService = Executors.newFixedThreadPool(numThreads)) {
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
 
-            try {
-                var chunkSize = (numRows - 2 * step) / numThreads;
-                CountDownLatch countDownLatch = new CountDownLatch(numThreads);
+        try {
+            var chunkSize = (numRows - 2 * step) / numThreads;
+            CountDownLatch countDownLatch = new CountDownLatch(numThreads);
 
-                for (int t = 0; t < numThreads; t++) {
-                    final var startRow = step + t * chunkSize;
-                    final var endRow = t == numThreads - 1 ? numRows - step : startRow + chunkSize;
+            for (int t = 0; t < numThreads; t++) {
+                final var startRow = step + t * chunkSize;
+                final var endRow = t == numThreads - 1 ? numRows - step : startRow + chunkSize;
 
-                    executorService.execute(() -> {
-                        for (int i = startRow; i < endRow; i++) {
-                            for (int j = step; j < numCols - step; j++) {
-                                boolean erode = true;
+                executorService.execute(() -> {
+                    for (int i = startRow; i < endRow; i++) {
+                        for (int j = step; j < numCols - step; j++) {
+                            boolean erode = true;
 
-                                for (var x = -step; x <= step && erode; x++) {
-                                    for (var y = -step; y <= step && erode; y++) {
-                                        if (inputMatrix[i + x][j + y] != 1) {
-                                            erode = false;
-                                        }
+                            for (var x = -step; x <= step && erode; x++) {
+                                for (var y = -step; y <= step && erode; y++) {
+                                    if (inputMatrix[i + x][j + y] != 1) {
+                                        erode = false;
                                     }
                                 }
-
-                                resultMatrix[i][j] = erode ? 1 : 0;
                             }
+
+                            resultMatrix[i][j] = erode ? 1 : 0;
                         }
+                    }
 
-                        countDownLatch.countDown();
-                    });
-                }
-
-                countDownLatch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                    countDownLatch.countDown();
+                });
             }
+
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         return resultMatrix;
@@ -230,14 +233,15 @@ public class ImageProcessorImpl implements ImageProcessor {
 
         var bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-        try (var executor = Executors.newFixedThreadPool(numThreads)) {
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+        try {
             var countDownLatch = new CountDownLatch(numThreads);
 
             for (int i = 0; i < numThreads; i++) {
                 final var startIndex = i * chunkSize;
                 final var endIndex = (i == numThreads - 1) ? width : (i + 1) * chunkSize;
 
-                executor.execute(() -> {
+                executorService.execute(() -> {
                     for (var row = startIndex; row < endIndex; row++) {
                         for (var j = 0; j < height; j++) {
                             var pixelValue = (erodedMatrix[row][j] == 1) ? 0xFFFFFF : 0x000000;

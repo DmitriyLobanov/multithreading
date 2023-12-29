@@ -1,4 +1,4 @@
-package com.lobanov.multitrading.image.tasks.taskA;
+package com.lobanov.multitrading.image.tasks;
 
 import com.lobanov.multitrading.image.dto.VectorRecord;
 import com.lobanov.multitrading.image.proccessor.ImageProcessor;
@@ -16,7 +16,7 @@ public class TaskBService {
     private final ImageProcessor imageProcessor;
 
 
-    public void doBTask() {
+    public void doTask() {
         var file = new File("C:\\Users\\guard\\OneDrive\\Рабочий стол\\МНОГОПОТОЧКА\\multitrading\\src\\main\\resources\\images\\cat.jpg");
         BufferedImage bufferedImage = imageIOHelper.readImage(file);
 
